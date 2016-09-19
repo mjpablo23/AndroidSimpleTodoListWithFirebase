@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "197192708789-git4s2e00fj4tp21g9ck2r1vqf07al0m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.insequence.simpletodo",
+            "certificate_hash": "BC7BF65C69D4D0621D5A4A1DD3CADC335BC0881F"
+          }
+        },
+        {
           "client_id": "197192708789-bmd2v6pevru2975j1l427541e6ai93ie.apps.googleusercontent.com",
           "client_type": 3
         }
