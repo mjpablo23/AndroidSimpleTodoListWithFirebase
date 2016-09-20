@@ -69,4 +69,12 @@ public class TodoItem {
     }
 
     // should also override hashCode() method?
+
+    // http://stackoverflow.com/questions/3546362/android-tostring
+    @Override
+    public String toString() {
+        return new StringBuilder()
+                .append(text + "\n")
+                .append(name).toString();
+    }
 }

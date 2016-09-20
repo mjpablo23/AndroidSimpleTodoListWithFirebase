@@ -62,19 +62,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // Firebase instance variables
     private DatabaseReference mFirebaseDatabaseReference;
 
-//    public static class ItemViewHolder extends RecyclerView.ViewHolder {
-//        public TextView itemTextView;
-//        public TextView nameTextView;
-//        // public CircleImageView messengerImageView;
-//
-//        public ItemViewHolder(View v) {
-//            super(v);
-//            itemTextView = (TextView) itemView.findViewById(R.id.messageTextView);
-//            nameTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
-//            // messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
-//        }
-//    }
-
     private static final String TAG = "MainActivity";
     public static final String ITEMS_CHILD = "items";
     private static final int REQUEST_INVITE = 1;
@@ -94,7 +81,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     ArrayList<String> items;
     ArrayList<TodoItem> todoItems;
-    ArrayAdapter<String> itemsAdapter;
+    //ArrayAdapter<String> itemsAdapter;
+    ArrayAdapter<TodoItem> itemsAdapter;
     ListView lvItems;
 
     // slide 24
@@ -111,7 +99,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         readItemsFromFirebase();
 
         System.out.println("setting items in itemsAdapter");
-        itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+        // itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+        itemsAdapter = new ArrayAdapter<TodoItem>(this, android.R.layout.simple_list_item_1, todoItems);
         lvItems.setAdapter(itemsAdapter);
         //items.add("First Item");
         //items.add("Second Item");
@@ -189,9 +178,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View item, int pos, long id) {
-                Object o = lvItems.getItemAtPosition(pos);
-                String str = (String) o;
-                System.out.println("str: " + o);
+//                Object o = lvItems.getItemAtPosition(pos);
+//                String str = (String) o;
+                String str = items.get(pos);
+                System.out.println("str: " + str);
                 launchEditItem(str, pos);
             }
         });
