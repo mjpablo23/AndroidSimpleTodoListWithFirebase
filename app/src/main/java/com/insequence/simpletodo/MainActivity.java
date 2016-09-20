@@ -23,6 +23,12 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.apache.commons.io.FileUtils;
 
@@ -41,7 +47,9 @@ import java.util.ArrayList;
 //import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 //import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
-// comment
+// bug:  if all items are removed, it crashes
+
+// make into todo list for groups
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener  {
 
@@ -51,8 +59,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 //    private String mUsername;
 //    private String mPhotoUrl;
 
+    // Firebase instance variables
+    private DatabaseReference mFirebaseDatabaseReference;
+
+//    public static class ItemViewHolder extends RecyclerView.ViewHolder {
+//        public TextView itemTextView;
+//        public TextView nameTextView;
+//        // public CircleImageView messengerImageView;
+//
+//        public ItemViewHolder(View v) {
+//            super(v);
+//            itemTextView = (TextView) itemView.findViewById(R.id.messageTextView);
+//            nameTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
+//            // messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
+//        }
+//    }
+
     private static final String TAG = "MainActivity";
-    public static final String MESSAGES_CHILD = "messages";
+    public static final String ITEMS_CHILD = "items";
     private static final int REQUEST_INVITE = 1;
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 10;
     public static final String ANONYMOUS = "anonymous";
@@ -69,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private EditText mMessageEditText;
 
     ArrayList<String> items;
+    ArrayList<TodoItem> todoItems;
     ArrayAdapter<String> itemsAdapter;
     ListView lvItems;
 
@@ -82,7 +107,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         lvItems = (ListView) findViewById(R.id.lvItems);
         // items = new ArrayList<>();
-        readItems();
+        // readItems();
+        readItemsFromFirebase();
+
+        System.out.println("setting items in itemsAdapter");
         itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
         lvItems.setAdapter(itemsAdapter);
         //items.add("First Item");
@@ -106,17 +134,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         }
 
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
 
-//        // Initialize ProgressBar and RecyclerView.
-//        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-//        mMessageRecyclerView = (RecyclerView) findViewById(R.id.messageRecyclerView);
-//        mLinearLayoutManager = new LinearLayoutManager(this);
-//        mLinearLayoutManager.setStackFromEnd(true);
-//        mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
     }
 
     @Override
@@ -146,8 +170,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             @Override
             public boolean onItemLongClick(AdapterView<?> adapter, View item, int pos, long id) {
                 items.remove(pos);
+
+                TodoItem orig = todoItems.get(pos);
+                // https://firebase.google.com/docs/database/android/save-data#delete_data
+                mFirebaseDatabaseReference.child(ITEMS_CHILD).child(orig.getKey()).removeValue();
+                todoItems.remove(pos);
                 itemsAdapter.notifyDataSetChanged();
-                writeItems();
+
+
+                // writeItems();
                 return true;
             }
         });
@@ -187,8 +218,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             System.out.println("str: " + str + ", Pos: " + pos);
             //lvItems.getItemAtPosition()
             items.set(pos, str);
+
+            TodoItem orig = todoItems.get(pos);
+            orig.setText(str);
+            todoItems.set(pos, orig);
+
+            // https://firebase.google.com/docs/database/android/save-data
+            mFirebaseDatabaseReference.child(ITEMS_CHILD).child(todoItems.get(pos).getKey()).child("text").setValue(str);
+
             itemsAdapter.notifyDataSetChanged();
-            writeItems();
+            // writeItems();
         }
     }
 
@@ -197,10 +236,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         EditText etNewItem = (EditText) findViewById(R.id.etNewItem);
         String itemText = etNewItem.getText().toString();
+
         System.out.println("onAddItem: " + itemText);
-        itemsAdapter.add(itemText);
+//        itemsAdapter.add(itemText);
+
+        // write to firebase
+        TodoItem todoItem = new
+                TodoItem(itemText,
+                mUsername,
+                mPhotoUrl, "");
+
+        mFirebaseDatabaseReference.child(ITEMS_CHILD)
+                .push().setValue(todoItem);
+
         etNewItem.setText("");
-        writeItems();
+        // writeItems();
     }
 
     // slide 25
@@ -213,6 +263,115 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         catch (IOException e) {
             items = new ArrayList<String>();
         }
+    }
+
+    // https://firebase.google.com/docs/database/android/retrieve-data
+    private void readItemsFromFirebase() {
+        items = new ArrayList<String>();
+        todoItems = new ArrayList<TodoItem>();
+
+        System.out.println("readItemsFromFirebase using child event listener");
+
+        ChildEventListener childEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+                System.out.println("onChildAdded:" + dataSnapshot.getKey());
+
+                // A new comment has been added, add it to the displayed list
+                // Comment comment = dataSnapshot.getValue(Comment.class);
+                TodoItem todoItem = dataSnapshot.getValue(TodoItem.class);
+                todoItem.setKey(dataSnapshot.getKey());
+                System.out.println("todoItem key: " + todoItem.getKey() + ", " + todoItem.getName() + ", " + todoItem.getText());
+                items.add(todoItem.getText());
+                todoItems.add(todoItem);
+                itemsAdapter.notifyDataSetChanged();
+                // ...
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+                Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
+
+                TodoItem changedTodoItem = dataSnapshot.getValue(TodoItem.class);
+                changedTodoItem.setKey(dataSnapshot.getKey());
+
+                //did override of equals method for todoItems
+                int ind = todoItems.indexOf(changedTodoItem);
+
+                todoItems.set(ind, changedTodoItem);
+                items.set(ind, changedTodoItem.getText());
+                itemsAdapter.notifyDataSetChanged();
+
+                // ...
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
+
+                // A comment has changed, use the key to determine if we are displaying this
+                // comment and if so remove it.
+//                String commentKey = dataSnapshot.getKey();
+
+                TodoItem removedTodoItem = dataSnapshot.getValue(TodoItem.class);
+                removedTodoItem.setKey(dataSnapshot.getKey());
+
+                //did override of equals method for todoItems
+                int ind = todoItems.indexOf(removedTodoItem);
+
+                todoItems.remove(ind);
+                items.remove(ind);
+                itemsAdapter.notifyDataSetChanged();
+
+                // ...
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+                Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
+
+                // A comment has changed position, use the key to determine if we are
+                // displaying this comment and if so move it.
+//                Comment movedComment = dataSnapshot.getValue(Comment.class);
+//                String commentKey = dataSnapshot.getKey();
+
+                // ...
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "postComments:onCancelled", databaseError.toException());
+                // Toast.makeText(mContext, "Failed to load comments.",
+                   //     Toast.LENGTH_SHORT).show();
+            }
+
+        };
+        mFirebaseDatabaseReference.child(ITEMS_CHILD).addChildEventListener(childEventListener);
+    }
+
+
+    // ----- no longer used -------
+    private void readItemsFromFirebase_usingValueEventListener() {
+        items = new ArrayList<String>();
+        System.out.println("readItemsFromFirebase");
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Get Post object and use the values to update the UI
+                System.out.println("dataSnapshot: " + dataSnapshot);
+                TodoItem todoItem = dataSnapshot.getValue(TodoItem.class);
+
+                items.add(todoItem.getText());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        };
+        mFirebaseDatabaseReference.child(ITEMS_CHILD).addValueEventListener(postListener);
     }
 
     private void writeItems() {
