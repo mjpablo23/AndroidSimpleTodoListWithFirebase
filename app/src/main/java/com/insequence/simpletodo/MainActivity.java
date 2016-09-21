@@ -8,10 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -82,7 +83,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     ArrayList<String> items;
     ArrayList<TodoItem> todoItems;
     //ArrayAdapter<String> itemsAdapter;
-    ArrayAdapter<TodoItem> itemsAdapter;
+    // ArrayAdapter<TodoItem> itemsAdapter;
+    TodoItemAdapter itemsAdapter;
     ListView lvItems;
 
     // slide 24
@@ -100,7 +102,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         System.out.println("setting items in itemsAdapter");
         // itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
-        itemsAdapter = new ArrayAdapter<TodoItem>(this, android.R.layout.simple_list_item_1, todoItems);
+        // itemsAdapter = new ArrayAdapter<TodoItem>(this, android.R.layout.simple_list_item_1, todoItems);
+
+        // TodoItemAdapter(Context context, ArrayList<TodoItem> users)
+        itemsAdapter = new TodoItemAdapter(this, todoItems);
         lvItems.setAdapter(itemsAdapter);
         //items.add("First Item");
         //items.add("Second Item");
@@ -130,6 +135,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
 
+    }
+
+    // http://stackoverflow.com/questions/10051104/android-menu-not-showing-up
+    // sometimes need to clean and build app for new stuff to show up
+    @Override
+    public boolean onCreateOptionsMenu(Menu my_menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, my_menu);
+        return true;
     }
 
     @Override
@@ -228,13 +242,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         String itemText = etNewItem.getText().toString();
 
         System.out.println("onAddItem: " + itemText);
+        // adding in firebase instead
 //        itemsAdapter.add(itemText);
 
         // write to firebase
         TodoItem todoItem = new
                 TodoItem(itemText,
                 mUsername,
-                mPhotoUrl, "");
+                mPhotoUrl, "", false);
 
         mFirebaseDatabaseReference.child(ITEMS_CHILD)
                 .push().setValue(todoItem);
@@ -265,11 +280,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                System.out.println("onChildAdded:" + dataSnapshot.getKey());
+                System.out.println("onChildAdded:" + dataSnapshot);
 
                 // A new comment has been added, add it to the displayed list
                 // Comment comment = dataSnapshot.getValue(Comment.class);
                 TodoItem todoItem = dataSnapshot.getValue(TodoItem.class);
+                todoItem.setChecked((boolean) dataSnapshot.child("checked").getValue());
                 todoItem.setKey(dataSnapshot.getKey());
                 System.out.println("todoItem key: " + todoItem.getKey() + ", " + todoItem.getName() + ", " + todoItem.getText());
                 items.add(todoItem.getText());
@@ -280,9 +296,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-                Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
+                System.out.println("onChildChanged:" + dataSnapshot.getKey());
 
                 TodoItem changedTodoItem = dataSnapshot.getValue(TodoItem.class);
+                changedTodoItem.setChecked((boolean) dataSnapshot.child("checked").getValue());
                 changedTodoItem.setKey(dataSnapshot.getKey());
 
                 //did override of equals method for todoItems
@@ -297,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
+                System.out.println("onChildRemoved:" + dataSnapshot.getKey());
 
                 // A comment has changed, use the key to determine if we are displaying this
                 // comment and if so remove it.

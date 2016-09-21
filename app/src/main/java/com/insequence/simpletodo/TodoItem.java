@@ -9,15 +9,18 @@ public class TodoItem {
     private String text;
     private String name;
     private String photoUrl;
+    private boolean checked;
+
 
     public TodoItem() {
     }
 
-    public TodoItem(String text, String name, String photoUrl, String key) {
+    public TodoItem(String text, String name, String photoUrl, String key, boolean checked) {
         this.text = text;
         this.name = name;
         this.photoUrl = photoUrl;
         this.key = key;
+        this.checked = checked;
     }
 
     public String getText() {
@@ -52,6 +55,14 @@ public class TodoItem {
         this.key = text;
     }
 
+    public boolean getChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
     // http://stackoverflow.com/questions/8180430/how-to-override-equals-method-in-java
     @Override
     public boolean equals(Object obj) {
@@ -69,6 +80,12 @@ public class TodoItem {
     }
 
     // should also override hashCode() method?
+//    @Override
+//    public int hashCode() {
+//        int hash = 3;
+//        hash = 53 * hash + (this.key != null ? this.key.hashCode() : 0);
+//        return hash;
+//    }
 
     // http://stackoverflow.com/questions/3546362/android-tostring
     @Override
