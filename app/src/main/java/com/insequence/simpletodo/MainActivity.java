@@ -122,8 +122,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
             startActivity(new Intent(this, SignInActivity.class));
-            finish();
-            return;
+            // finish();
+            // return;
         } else {
             mUsername = mFirebaseUser.getDisplayName();
             if (mFirebaseUser.getPhotoUrl() != null) {
