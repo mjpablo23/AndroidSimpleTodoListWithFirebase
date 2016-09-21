@@ -52,6 +52,9 @@ import java.util.ArrayList;
 
 // make into todo list for groups
 
+// need to make edit and remove work again. need to turn on blockDescendants in xml
+// http://stackoverflow.com/questions/5551042/onitemclicklistener-not-working-in-listview
+
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener  {
 
     // Firebase instance variables
@@ -172,13 +175,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapter, View item, int pos, long id) {
-                items.remove(pos);
+                // items.remove(pos);
 
                 TodoItem orig = todoItems.get(pos);
                 // https://firebase.google.com/docs/database/android/save-data#delete_data
                 mFirebaseDatabaseReference.child(ITEMS_CHILD).child(orig.getKey()).removeValue();
-                todoItems.remove(pos);
-                itemsAdapter.notifyDataSetChanged();
+
+                // have it be removed in the firebase listener method
+//                todoItems.remove(pos);
+//                itemsAdapter.notifyDataSetChanged();item2
 
 
                 // writeItems();
