@@ -23,21 +23,21 @@
 
         <activity android:name=".SignInActivity" />
 
-        <service
-            android:name=".MyFirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
+        <!--<service-->
+            <!--android:name=".MyFirebaseMessagingService"-->
+            <!--android:exported="false">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.google.firebase.MESSAGING_EVENT" />-->
+            <!--</intent-filter>-->
+        <!--</service>-->
 
-        <service
-            android:name=".MyFirebaseInstanceIdService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
+        <!--<service-->
+            <!--android:name=".MyFirebaseInstanceIdService"-->
+            <!--android:exported="false">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.google.firebase.INSTANCE_ID_EVENT" />-->
+            <!--</intent-filter>-->
+        <!--</service>-->
 
         <activity
             android:name=".EditItemActivity"
@@ -45,7 +45,7 @@
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <!--from 2nd solution:  http://stackoverflow.com/questions/5776851/load-image-from-url-->
-        <uses-permission android:name="android.permission.INTERNET"/>
+
     </application>
 
 </manifest>

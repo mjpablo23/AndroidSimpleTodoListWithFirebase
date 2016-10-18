@@ -2,94 +2,32 @@ package com.insequence.simpletodo;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import butterknife.ButterKnife;
 
-// import com.google.android.gms.auth.api.Auth;
-//import com.google.android.gms.common.ConnectionResult;
-//import com.google.android.gms.common.api.GoogleApiClient;
-//import com.google.firebase.auth.FirebaseAuth;
-//import com.google.firebase.auth.FirebaseUser;
-//import com.bumptech.glide.Glide;
-//import com.firebase.ui.database.FirebaseRecyclerAdapter;
-//import com.google.android.gms.auth.api.Auth;
-//import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-//import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
-// bug:  if all items are removed, it crashes
-
-// make into todo list for groups
-
-// need to make edit and remove work again. need to turn on blockDescendants in xml
-// http://stackoverflow.com/questions/5551042/onitemclicklistener-not-working-in-listview
-
-//public class MainActivity extends AppCompatActivity  {
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener  {
-
-    // Firebase instance variables
-    private FirebaseAuth mFirebaseAuth;
-    private FirebaseUser mFirebaseUser;
-//    private String mUsername;
-//    private String mPhotoUrl;
-
-    // Firebase instance variables
-    private DatabaseReference mFirebaseDatabaseReference;
+public class MainActivity extends AppCompatActivity  {
 
     private static final String TAG = "MainActivity";
     public static final String ITEMS_CHILD = "items";
-    private static final int REQUEST_INVITE = 1;
-    public static final int DEFAULT_MSG_LENGTH_LIMIT = 10;
     public static final String ANONYMOUS = "anonymous";
-    private static final String MESSAGE_SENT_EVENT = "message_sent";
-    private String mUsername;
-    private String mPhotoUrl;
-    private SharedPreferences mSharedPreferences;
-    private GoogleApiClient mGoogleApiClient;
 
-    private Button mSendButton;
-    private RecyclerView mMessageRecyclerView;
-    private LinearLayoutManager mLinearLayoutManager;
-    private ProgressBar mProgressBar;
-    private EditText mMessageEditText;
-
-    ArrayList<String> items;
     ArrayList<TodoItem> todoItems;
     TodoItemAdapter itemsAdapter;
     ListView lvItems;
@@ -119,12 +57,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         getSupportActionBar().hide();
 
         contactList = new ArrayList<>();
-        // startFB();
 
         // replace with butterknife
         lvItems = (ListView) findViewById(R.id.lvItems);
 
-        readTodoItems();
+        todoItems = new ArrayList<TodoItem>();
 
         System.out.println("setting items in itemsAdapter");
         itemsAdapter = new TodoItemAdapter(this, todoItems);
@@ -137,92 +74,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         new GetContacts().execute();
     }
 
-    private void startFB() {
-        // Initialize Firebase Auth
-        mFirebaseAuth = FirebaseAuth    .getInstance();
-        mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        if (mFirebaseUser == null) {
-            // Not signed in, launch the Sign In activity
-            startActivity(new Intent(this, SignInActivity.class));
-            // finish();
-            // return;
-        } else {
-            mUsername = mFirebaseUser.getDisplayName();
-            if (mFirebaseUser.getPhotoUrl() != null) {
-                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
-            }
-        }
-
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API)
-                .build();
-
-    }
-
-    // http://stackoverflow.com/questions/10051104/android-menu-not-showing-up
-    // sometimes need to clean and build app for new stuff to show up
-    @Override
-    public boolean onCreateOptionsMenu(Menu my_menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, my_menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.sign_out_menu:
-                mFirebaseAuth.signOut();
-                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-                mUsername = ANONYMOUS;
-                startActivity(new Intent(this, SignInActivity.class));
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-        // be available.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
-    }
-
     private void setupListViewListener() {
-        lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapter, View item, int pos, long id) {
-                // items.remove(pos);
-
-                TodoItem orig = todoItems.get(pos);
-                // https://firebase.google.com/docs/database/android/save-data#delete_data
-                mFirebaseDatabaseReference.child(ITEMS_CHILD).child(orig.getKey()).removeValue();
-
-                // have it be removed in the firebase listener method
-//                todoItems.remove(pos);
-//                itemsAdapter.notifyDataSetChanged();item2
-
-
-                // writeItems();
-                return true;
-            }
-        });
-
-        // setContentView(lvItems);
         // http://stackoverflow.com/questions/9097723/adding-an-onclicklistener-to-listview-android
         // http://stackoverflow.com/questions/36917725/error-setonclicklistener-from-an-android-app
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View item, int pos, long id) {
-//                Object o = lvItems.getItemAtPosition(pos);
-//                String str = (String) o;
-                // String str = items.get(pos);
-
                 TodoItem todoItem = todoItems.get(pos);
                 String str = todoItem.getKey();
                 System.out.println("str: " + str);
@@ -253,81 +110,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             String str = data.getExtras().getString("str");
             int pos = data.getExtras().getInt("pos");
             System.out.println("str: " + str + ", Pos: " + pos);
-            //lvItems.getItemAtPosition()
-            items.set(pos, str);
+
+            // items.set(pos, str);
 
             TodoItem orig = todoItems.get(pos);
             orig.setText(str);
             todoItems.set(pos, orig);
 
-            // https://firebase.google.com/docs/database/android/save-data
-            mFirebaseDatabaseReference.child(ITEMS_CHILD).child(todoItems.get(pos).getKey()).child("text").setValue(str);
-
             itemsAdapter.notifyDataSetChanged();
-            // writeItems();
         }
     }
 
-    // slide 23
-//    public void onAddItem(View v) {
-//
-//        EditText etNewItem = (EditText) findViewById(R.id.etNewItem);
-//        String itemText = etNewItem.getText().toString();
-//
-//        System.out.println("onAddItem: " + itemText);
-//
-//        // write to firebase
-//        TodoItem todoItem = new
-//                TodoItem(itemText,
-//                mUsername,
-//                mPhotoUrl, "", "", "");
-//
-//        mFirebaseDatabaseReference.child(ITEMS_CHILD)
-//                .push().setValue(todoItem);
-//
-//        etNewItem.setText("");
-//    }
-
-    // slide 25
-    private void readItems() {
-        File filesDir = getFilesDir();
-        File todoFile = new File(filesDir, "todo.txt");
-        try {
-            items = new ArrayList<String>(FileUtils.readLines(todoFile));
-        }
-        catch (IOException e) {
-            items = new ArrayList<String>();
-        }
-    }
-
-    private void readTodoItems() {
-        File filesDir = getFilesDir();
-        File todoFile = new File(filesDir, "todo.txt");
-        try {
-            items = new ArrayList<String>(FileUtils.readLines(todoFile));
-        }
-        catch (IOException e) {
-            items = new ArrayList<String>();
-        }
-
-        todoItems = new ArrayList<TodoItem>();
-
-//        for (int i=0; i<items.size(); i++) {
-//            TodoItem t = new TodoItem("text: " + items.get(i), "name: " + items.get(i), "", "" + i, true);
-//            todoItems.add(t);
-//        }
-    }
-
-
-    private void writeItems() {
-        File filesDir = getFilesDir();
-        File todoFile = new File(filesDir, "todo.txt");
-        try {
-            FileUtils.writeLines(todoFile, items);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -419,8 +212,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         contact.put("vote_average", vote_average);
                         contact.put("release_date", release_date);
 
-//                        contact.put("email", email);
-//                        contact.put("mobile", mobile);
 
                         // adding contact to contact list
                         contactList.add(contact);

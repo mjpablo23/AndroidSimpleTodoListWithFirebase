@@ -21,15 +21,6 @@ public class EditItemActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
         String str = getIntent().getStringExtra("str");
         String title = getIntent().getStringExtra("title");
         String description = getIntent().getStringExtra("description");
@@ -76,9 +67,6 @@ public class EditItemActivity extends AppCompatActivity {
     // when the subactivity is complete then it can return the result to the parent
     public void onSubmit(View v) {
         System.out.println("onSubmit");
-//        EditText etNewItem = (EditText) findViewById(R.id.editItemText);
-//        String itemText = etNewItem.getText().toString();
-//        System.out.println("save: " + itemText);
 
         Intent data = new Intent();
         data.putExtra("str", "itemText");
