@@ -3,6 +3,9 @@
     package="com.insequence.simpletodo">
 
     <!--http://stackoverflow.com/questions/10607392/custom-global-application-class-breaks-with-android-app-application-cannot-be-c-->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -20,13 +23,13 @@
 
         <activity android:name=".SignInActivity" />
 
-        <!--<service-->
-            <!--android:name=".MyFirebaseMessagingService"-->
-            <!--android:exported="false">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.google.firebase.MESSAGING_EVENT" />-->
-            <!--</intent-filter>-->
-        <!--</service>-->
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <service
             android:name=".MyFirebaseInstanceIdService"

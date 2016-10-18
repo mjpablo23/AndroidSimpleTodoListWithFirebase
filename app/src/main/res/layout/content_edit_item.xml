@@ -14,26 +14,62 @@
 
     <!--http://stackoverflow.com/questions/4233626/allow-multi-line-in-edittext-view-in-android-->
 
-    <EditText
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/editItemText"
-        android:inputType="textMultiLine"
+        android:id="@+id/infoImageButton"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="42dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:height="300dp" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
-        android:onClick="save"
-        android:id="@+id/button"
-        android:layout_below="@+id/editItemText"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="66dp" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text title"
+        android:id="@+id/infoTitleView"
+        android:layout_below="@+id/infoImageButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text rating"
+        android:id="@+id/infoRatingView"
+        android:layout_below="@+id/infoTitleView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text release date"
+        android:id="@+id/infoReleaseDateView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/infoRatingView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text description"
+        android:id="@+id/infoDescriptionView"
+        android:layout_below="@+id/infoReleaseDateView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 </RelativeLayout>

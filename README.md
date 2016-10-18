@@ -1,62 +1,58 @@
-# SimpleTodoPaul
-todo list for codepath
+# Project 1 - *Flicks*
 
-http://courses.codepath.com/snippets/intro_to_android/prework
+**Flicks** shows the latest movies currently playing in theaters. The app utilizes the Movie Database API to display images and basic information about these movies to the user.
 
-Quick Summary:
-To add new item, type into bottom edit text box and press add.
-To edit item, tap on an item to bring up edit box. edit and press save. 
-To delete item, long press on an item.
-
-This app is a shared todo list that updates in real time. 
-Multiple users can see the shared todo list and make updates, 
-and changes will be instantly updated to other users.
-
-————————————————————————————————————————————————————————————
-
-# Pre-work - SimpleTodo
-
-SimpleTodo is an android app that allows building a todo list and basic todo items management functionality including adding new items, editing and deleting an existing item.
-
-Submitted by: Paul Yang
-
-Time spent: 15 hours spent in total
+Time spent: **12** hours spent in total
 
 ## User Stories
 
 The following **required** functionality is completed:
 
-* [y] User can **successfully add and remove items** from the todo list
-* [y] User can **tap a todo item in the list and bring up an edit screen for the todo item** and then have any changes to the text reflected in the todo list.
-* [y] User can **persist todo items** and retrieve them properly on app restart
+* [ y] User can **scroll through current movies** from the Movie Database API
+* [ y] Layout is optimized with the [ViewHolder](http://guides.codepath.com/android/Using-an-ArrayAdapter-with-ListView#improving-performance-with-the-viewholder-pattern) pattern.
+* [ y] For each movie displayed, user can see the following details:
+  * [ y] Title, Poster Image, Overview (Portrait mode)
+  * [ y] Title, Backdrop Image, Overview (Landscape mode)
 
 The following **optional** features are implemented:
 
-* [y] Persist the todo items [google Firebase]
-* [y] Improve style of the todo items in the list [using a custom adapter](http://guides.codepath.com/android/Using-an-ArrayAdapter-with-ListView)
-* [ ] Add support for completion due dates for todo items (and display within listview item)
-* [ ] Use a [DialogFragment](http://guides.codepath.com/android/Using-DialogFragment) instead of new Activity for editing items
-* [ ] Add support for selecting the priority of each todo item (and display in listview item)
-* [y] added profile images for users
+* [ ] User can **pull-to-refresh** popular stream to get the latest movies.
+* [ ] Display a nice default [placeholder graphic](http://guides.codepath.com/android/Displaying-Images-with-the-Picasso-Library#configuring-picasso) for each image during loading.
+* [ y] Improved the user interface through styling and coloring.
+
+The following **bonus** features are implemented:
+
+* [ y] Allow user to view details of the movie including ratings and popularity within a separate activity or dialog fragment.
+* [ ] When viewing a popular movie (i.e. a movie voted for more than 5 stars) the video should show the full backdrop image as the layout.  Uses [Heterogenous ListViews](http://guides.codepath.com/android/Implementing-a-Heterogenous-ListView) or [Heterogenous RecyclerView](http://guides.codepath.com/android/Heterogenous-Layouts-inside-RecyclerView) to show different layouts.
+* [ ] Allow video trailers to be played in full-screen using the YouTubePlayerView.
+    * [ ] Overlay a play icon for videos that can be played.
+    * [ ] More popular movies should start a separate activity that plays the video immediately.
+    * [ ] Less popular videos rely on the detail page should show ratings and a YouTube preview.
+* [ ] Apply the popular [Butterknife annotation library](http://guides.codepath.com/android/Reducing-View-Boilerplate-with-Butterknife) to reduce boilerplate code.
+* [ ] Apply rounded corners for the poster or background images using [Picasso transformations](https://guides.codepath.com/android/Displaying-Images-with-the-Picasso-Library#other-transformations)
+* [ ] Replaced android-async-http network client with the popular [OkHttp](http://guides.codepath.com/android/Using-OkHttp) or [Volley](http://guides.codepath.com/android/Networking-with-the-Volley-Library) networking libraries.
 
 The following **additional** features are implemented:
 
-* [y] added check boxes
-*  multiple users can update list at the same time.  changes will be seen in real time.
+* [ ] List anything else that you can get done to improve the app functionality!
 
-## Video Walkthrough 
+## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://imgur.com/a/ErONc' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='http://imgur.com/a/hmsLf' title='Video Walkthrough Landscape' width='' alt='Video Walkthrough' />
+<img src='http://imgur.com/a/PDOgk' title='Video Walkthrough Landscape' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
 Describe any challenges encountered while building the app.
-1) Had trouble figuring out that I needed to implement “onItemClick” instead of “onClick”.  It kept not compiling.  
-2) Is onSubmit automatically called when exiting the activity?  or always needs to be explicitly called?
+
+## Open-source libraries used
+
+- [Android Async HTTP](https://github.com/loopj/android-async-http) - Simple asynchronous HTTP requests with JSON parsing
+- [Picasso](http://square.github.io/picasso/) - Image loading and caching library for Android
 
 ## License
 

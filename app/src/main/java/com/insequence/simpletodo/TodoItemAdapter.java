@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -34,7 +33,7 @@ public class TodoItemAdapter extends ArrayAdapter<TodoItem> {
         TextView itemPersonName;
         TextView itemText;
         ImageView imageView;
-        CheckBox checkBox;
+        // CheckBox checkBox;
     }
 
     public TodoItemAdapter(Context context, ArrayList<TodoItem> users) {
@@ -58,7 +57,7 @@ public class TodoItemAdapter extends ArrayAdapter<TodoItem> {
             viewHolder.itemPersonName = (TextView) convertView.findViewById(R.id.itemPersonName);
             viewHolder.itemText = (TextView) convertView.findViewById(R.id.itemText);
             viewHolder.imageView = (ImageView) convertView.findViewById(R.id.imageView3);
-            viewHolder.checkBox = (CheckBox) convertView.findViewById(R.id.chkBox);
+            // viewHolder.checkBox = (CheckBox) convertView.findViewById(R.id.chkBox);
             // Cache the viewHolder object inside the fresh view
             convertView.setTag(viewHolder);
         } else {
@@ -68,18 +67,6 @@ public class TodoItemAdapter extends ArrayAdapter<TodoItem> {
         // Populate the data into the template view using the data object
         viewHolder.itemPersonName.setText(todoItem.getName());
         viewHolder.itemText.setText(todoItem.getText());
-
-        // http://stackoverflow.com/questions/15941635/how-to-add-a-listener-for-checkboxes-in-an-adapter-view-android-arrayadapter
-        viewHolder.checkBox.setChecked(todoItem.getChecked());
-        viewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                final boolean checked = viewHolder.checkBox.isChecked();
-                // update on firebase.
-                System.out.println("checked: " + checked);
-                mFirebaseDatabaseReference.child(ITEMS_CHILD).child(todoItem.getKey()).child("checked").setValue(checked);
-            }
-        });
 
         // get the profile picture from url
 

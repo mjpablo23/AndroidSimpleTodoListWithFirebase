@@ -9,18 +9,21 @@ public class TodoItem {
     private String text;
     private String name;
     private String photoUrl;
-    private boolean checked;
-
+    private String posterUrl;
+    private String backdropUrl;
+    public String rating;
+    public String releaseDate;
 
     public TodoItem() {
     }
 
-    public TodoItem(String text, String name, String photoUrl, String key, boolean checked) {
+    public TodoItem(String text, String name, String photoUrl, String key, String posterUrl, String backdropUrl) {
         this.text = text;
         this.name = name;
         this.photoUrl = photoUrl;
         this.key = key;
-        this.checked = checked;
+        this.posterUrl = posterUrl;
+        this.backdropUrl = backdropUrl;
     }
 
     public String getText() {
@@ -55,12 +58,20 @@ public class TodoItem {
         this.key = text;
     }
 
-    public boolean getChecked() {
-        return checked;
+    public String getPosterUrl() {
+        return posterUrl;
     }
 
-    public void setChecked(boolean checked) {
-        this.checked = checked;
+    public void setPosterUrl(String posterUrl) {
+        this.posterUrl = posterUrl;
+    }
+
+    public String getBackdropUrl() {
+        return backdropUrl;
+    }
+
+    public void setBackdropUrl(String BackdropUrl) {
+        this.backdropUrl = BackdropUrl;
     }
 
     // http://stackoverflow.com/questions/8180430/how-to-override-equals-method-in-java
