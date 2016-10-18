@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
 
 android {
     compileSdkVersion 24
@@ -24,6 +25,9 @@ android {
 }
 
 dependencies {
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
 
@@ -44,4 +48,3 @@ dependencies {
 
 // Add to the bottom of the file
 apply plugin: 'com.google.gms.google-services'
-

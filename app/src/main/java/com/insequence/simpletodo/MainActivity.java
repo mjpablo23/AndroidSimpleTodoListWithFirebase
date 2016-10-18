@@ -40,6 +40,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import butterknife.ButterKnife;
+
 // import com.google.android.gms.auth.api.Auth;
 //import com.google.android.gms.common.ConnectionResult;
 //import com.google.android.gms.common.api.GoogleApiClient;
@@ -89,10 +91,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     ArrayList<String> items;
     ArrayList<TodoItem> todoItems;
-    //ArrayAdapter<String> itemsAdapter;
-    // ArrayAdapter<TodoItem> itemsAdapter;
     TodoItemAdapter itemsAdapter;
     ListView lvItems;
+    // @BindView(R.id.lvItems) ListView lvItems;
 
     int inPortraitMode = 1;
 
@@ -120,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         contactList = new ArrayList<>();
         // startFB();
 
+        // replace with butterknife
         lvItems = (ListView) findViewById(R.id.lvItems);
 
         readTodoItems();
@@ -128,6 +130,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         itemsAdapter = new TodoItemAdapter(this, todoItems);
         lvItems.setAdapter(itemsAdapter);
         setupListViewListener();
+
+        ButterKnife.bind(this);
+        ButterKnife.setDebug(true);
 
         new GetContacts().execute();
     }

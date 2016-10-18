@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import butterknife.ButterKnife;
+
 public class EditItemActivity extends AppCompatActivity {
 
     private int pos = 0;
@@ -38,17 +40,26 @@ public class EditItemActivity extends AppCompatActivity {
         pos = getIntent().getIntExtra("pos", 0);
 
         Log.d("i", "pos: " + pos);
+
         TextView titleView = (TextView) findViewById(R.id.infoTitleView);
         TextView descriptionView = (TextView) findViewById(R.id.infoDescriptionView);
         TextView ratingView = (TextView) findViewById(R.id.infoRatingView);
-        TextView releaseDateView = (TextView) findViewById(R.id.infoReleaseDateView);
+         TextView releaseDateView = (TextView) findViewById(R.id.infoReleaseDateView);
+
+//        @BindView(R.id.infoTitleView) TextView titleView;
+//        @BindView(R.id.infoDescriptionView) TextView descriptionView;
+//        @BindView(R.id.infoRatingView) TextView ratingView;
+//        @BindView(R.id.infoReleaseDateView) TextView releaseDateView;
 
         // don't know why they are reversed
         descriptionView.setText(title);
         titleView.setText(description);
-
         ratingView.setText("Average Rating: " + rating);
         releaseDateView.setText("Release Date: " + releaseDate);
+
+        ButterKnife.setDebug(true);
+
+        ButterKnife.bind(this, titleView);
 
 //        EditText editText = (EditText) findViewById(R.id.editItemText);
 //        editText.setText(str);

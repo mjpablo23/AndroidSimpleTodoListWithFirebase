@@ -18,6 +18,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by paulyang on 9/20/16.
  */
@@ -29,11 +32,21 @@ public class TodoItemAdapter extends ArrayAdapter<TodoItem> {
     public static final String ITEMS_CHILD = "items";
     private DatabaseReference mFirebaseDatabaseReference;
 
-    private static class ViewHolder {
-        TextView itemPersonName;
-        TextView itemText;
-        ImageView imageView;
-        // CheckBox checkBox;
+
+
+    // private static class ViewHolder {
+    static class ViewHolder {
+//         TextView itemPersonName;
+//         TextView itemText;
+//         ImageView imageView;
+
+        @BindView(R.id.itemPersonName) TextView itemPersonName;
+        @BindView(R.id.itemText) TextView itemText;
+        @BindView(R.id.imageView3) ImageView imageView;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 
     public TodoItemAdapter(Context context, ArrayList<TodoItem> users) {
@@ -49,21 +62,29 @@ public class TodoItemAdapter extends ArrayAdapter<TodoItem> {
         final TodoItem todoItem = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         final ViewHolder viewHolder; // view lookup cache stored in tag
+        // ViewHolder viewHolder; // view lookup cache stored in tag
         if (convertView == null) {
             // If there's no view to re-use, inflate a brand new view for row
-            viewHolder = new ViewHolder();
+            // viewHolder = new ViewHolder();  // replace with butter
+
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.todo_item, parent, false);
-            viewHolder.itemPersonName = (TextView) convertView.findViewById(R.id.itemPersonName);
-            viewHolder.itemText = (TextView) convertView.findViewById(R.id.itemText);
-            viewHolder.imageView = (ImageView) convertView.findViewById(R.id.imageView3);
-            // viewHolder.checkBox = (CheckBox) convertView.findViewById(R.id.chkBox);
+            viewHolder = new ViewHolder(convertView); // butter
+
+            // replace with butter
+//             viewHolder.itemPersonName = (TextView) convertView.findViewById(R.id.itemPersonName);
+//             viewHolder.itemText = (TextView) convertView.findViewById(R.id.itemText);
+//             viewHolder.imageView = (ImageView) convertView.findViewById(R.id.imageView3);
+
             // Cache the viewHolder object inside the fresh view
             convertView.setTag(viewHolder);
         } else {
             // View is being recycled, retrieve the viewHolder object from tag
             viewHolder = (ViewHolder) convertView.getTag();
         }
+
+
+
         // Populate the data into the template view using the data object
         viewHolder.itemPersonName.setText(todoItem.getName());
         viewHolder.itemText.setText(todoItem.getText());
